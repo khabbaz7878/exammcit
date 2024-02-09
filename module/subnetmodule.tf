@@ -20,8 +20,5 @@ module "subnets" {
     private = []
   }
 
-  tags = {
-    Terraform = "true"
-    Environment = "dev" 
-  }
+  
 }
