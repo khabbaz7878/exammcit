@@ -1,29 +1,26 @@
-data "aws_vpc" "selected" {
+data "aws_vpc" "this" {
   id = var.vpc_id
 }
 
-resource "aws_instance" "instance" {
+resource "aws_instance" "this" {
   ami           = var.ami
   instance_type = var.instance_type
   subnet_id     = var.subnet_id
-
   vpc_security_group_ids = [aws_security_group.instance.id]
 
-  user_data = file("install-httpd.sh")
-
   tags = {
-    Name = var.instance_name
+    Name = var.name
   }
 }
 
 resource "aws_security_group" "instance" {
-  name_prefix = var.instance_name
+  name_prefix = var.name
   description = "Security group for the EC2 instance"
-  vpc_id      = data.aws_vpc.selected.id
+  vpc_id      = data.aws_vpc.this.id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -36,10 +33,22 @@ resource "aws_security_group" "instance" {
   }
 }
 
-output "instance_id" {
-  value = aws_instance.instance.id
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID for the EC2 instance"
 }
 
-output "instance_public_ip" {
-  value = aws_instance.instance.public_ip
+variable "ami" {
+  type        = string
+  description = "AMI ID for the EC2 instance"
+}
+
+variable "instance_type" {
+  type        = string
+  description = "Instance type for the EC2 instance"
+}
+
+variable "name" {
+  type        = string
+  description = "Name tag for the EC2 instance"
 }
