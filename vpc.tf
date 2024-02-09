@@ -1,15 +1,13 @@
-# vpc_module/main.tf
+# VPC module
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
 
-resource "aws_vpc" "my_vpc" {
-  cidr_block = "10.0.0.0/16"
-  # Add other VPC configurations as needed
+  name = "my-vpc"
+  cidr = "10.0.0.0/16"
+
+  azs             = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+
+  enable_nat_gateway = true
 }
-
-resource "aws_subnet" "subnet_a" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
-  # Add other subnet configurations as needed
-}
-
-# Add more subnets as needed
