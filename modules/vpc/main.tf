@@ -1,4 +1,4 @@
-resource "aws_vpc" "main" {
+resource "aws_vpc" "this" {
   cidr_block = var.cidr_block
 
   tags = {
@@ -6,19 +6,10 @@ resource "aws_vpc" "main" {
   }
 }
 
-resource "aws_subnet" "public" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet_cidr_block
-
-  tags = {
-    Name = "Public Subnet"
-  }
-}
-
 output "vpc_id" {
-  value = aws_vpc.main.id
+  value = aws_vpc.this.id
 }
 
-output "subnet_id" {
-  value = aws_subnet.public.id
+output "cidr_block" {
+  value = aws_vpc.this.cidr_block
 }
