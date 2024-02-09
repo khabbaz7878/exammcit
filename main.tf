@@ -15,47 +15,30 @@ module "vpc" {
   }
 }
 
-# Subnet module
-module "subnets" {
-  source = "terraform-aws-modules/subnets/aws"
-
+# Public subnets
+resource "aws_subnet" "public" {
   vpc_id = module.vpc.vpc_id
-
-  subnets = {
-    public = [
-      {
-        name = "public-1"
-        cidr = "10.0.101.0/24"
-        az   = "us-east-1a"
-      },
-      {
-        name = "public-2"
-        cidr = "10.0.102.0/24"
-        az   = "us-east-1b"
-      },
-    ]
-    private = []
-  }
+  cidr_block = "10.0.101.0/24"
+  availability_zone = "us-east-1a"
 
   tags = {
-    Terraform = "true"
-    Environment = "dev" 
+    Name = "Public subnet 1"
   }
 }
 
-# EC2 module
+# EC2 instance
 module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
 
   name = "my-ec2-instance"
 
-  ami                    = "ami-ebd02392" 
-  instance_type          = "t2.micro"
+  ami                    = "ami-ebd02392"
+  instance_type          = "t2.micro" 
   vpc_security_group_ids = [module.vpc.default_security_group_id]
-  subnet_id              = module.subnets.public_subnets[0]
+  subnet_id              = aws_subnet.public.id
 
   tags = {
     Terraform   = "true"
-    Environment = "dev"
+    Environment = "dev" 
   }
 }
