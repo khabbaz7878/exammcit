@@ -1,16 +1,14 @@
-# EC2 module
-module "ec2_instance" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-
-  name = "my-ec2-instance"
-
-  ami                    = "ami-ebd02392" 
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [module.vpc.default_security_group_id]
-  subnet_id              = module.subnets.public_subnets[0]
+resource "aws_instance" "this" {
+  ami           = var.ami
+  instance_type = var.instance_type
+  subnet_id     = var.subnet_id
 
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
+    Name = var.instance_name
   }
+}
+
+output "instance_id" {
+  value       = aws_instance.this.id
+  description = "The ID of the EC2 instance"
 }
