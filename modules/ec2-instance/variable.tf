@@ -1,24 +1,24 @@
-variable "name" {
+variable "instance_name" {
   type        = string
-  description = "The name of the EC2 instance."
+  description = "Name of the EC2 instance"
 }
 
 variable "ami" {
   type        = string
-  description = "The ID of the AMI for the EC2 instance."
+  description = "AMI ID for the EC2 instance"
 }
 
 variable "instance_type" {
   type        = string
-  description = "The instance type for the EC2 instance."
+  description = "Instance type for the EC2 instance"
 }
 
 variable "vpc_id" {
   type        = string
-  description = "The ID of the VPC where the subnet is located."
+  description = "VPC ID for the EC2 instance"
 }
 
 variable "subnet_id" {
   type        = string
-  description = "The ID of the subnet where the EC2 instance will be launched."
+  description = "Subnet ID for the EC2 instance"
 }
