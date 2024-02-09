@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "./vpc"
+  source = "./vpc_module"
 }
 
 module "ec2_instance" {
