@@ -1,19 +1,13 @@
-# main.tf
-
 module "vpc" {
-  source = "./modules/vpc"
-
-  name       = "example-vpc"
-  cidr_block = "10.0.0.0/16"
+  source               = "./vpc"
+  vpc_cidr             = "10.0.0.0/16"
+  public_subnet_cidr   = "10.0.1.0/24"
+  private_subnet_cidr  = "10.0.2.0/24"
 }
 
-module "ec2" {
-  source = "./modules/ec2"
-
-  name              = "example-ec2"
-  ami               = "ami-12345678"
-  instance_type     = "t2.micro"
-  instance_name     = "example-ec2"
-  subnet_id         = module.vpc.subnet_id
-  vpc_id            = module.vpc.vpc_id
+module "ec2_instance" {
+  source        = "./ec2"
+  ami           = "your-ami-id"
+  instance_type = "t2.micro"
+  subnet_id     = module.vpc.public_subnet_ids[0] // Choose one of the public subnets
 }
