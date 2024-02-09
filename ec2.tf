@@ -1,8 +1,14 @@
-# ec2_instance_module/main.tf
+# EC2 module
+module "ec2_instance" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  
+  name = "my-ec2-instance"
 
-resource "aws_instance" "my_instance" {
-  ami           = "ami-12345678"  # Replace with your desired AMI
-  instance_type = "t2.micro"
-  subnet_id     = var.subnet_id   # Using subnet_id from input variables
-  # Add other instance configurations as needed
+  ami                    = "ami-ebd02392"
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  subnet_id              = module.vpc.public_subnets[0]
 }
+
+
+
