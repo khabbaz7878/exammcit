@@ -13,3 +13,8 @@ module "ec2-instance" {
   ami             = "ami-0c55b159cbfafe1f0" # Replace this
 
 }
+module "ec2-instance" {
+  source  = "path/to/ec2-instance-module"
+  subnet_id = module.vpc.subnet_id # replace this with the actual output variable name from the VPC module
+  # other arguments go here
+}
