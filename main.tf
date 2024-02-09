@@ -11,3 +11,5 @@ module "ec2-instance" {
 
   instance_name   = "my-ec2-instance"
   ami             = "ami-0c55b159cbfafe1f0" # Replace this
+
+}
