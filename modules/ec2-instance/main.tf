@@ -1,54 +1,10 @@
-data "aws_vpc" "this" {
-  id = var.vpc_id
-}
+module "ec2_instance" { 
+source = "terraform-aws-modules/ec2-instance/aws"
 
-resource "aws_instance" "this" {
-  ami           = var.ami
-  instance_type = var.instance_type
-  subnet_id     = var.subnet_id
-  vpc_security_group_ids = [aws_security_group.instance.id]
+name = "my-instance" ami = "ami-ebd02392" 
+instance_type = "t2.micro" 
+vpc_security_group_ids = [module.vpc.default_security_group_id] 
+subnet_id = module.vpc.public_subnets[0]
 
-  tags = {
-    Name = var.name
-  }
-}
-
-resource "aws_security_group" "instance" {
-  name_prefix = var.name
-  description = "Security group for the EC2 instance"
-  vpc_id      = data.aws_vpc.this.id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-variable "vpc_id" {
-  type        = string
-  description = "VPC ID for the EC2 instance"
-}
-
-variable "ami" {
-  type        = string
-  description = "AMI ID for the EC2 instance"
-}
-
-variable "instance_type" {
-  type        = string
-  description = "Instance type for the EC2 instance"
-}
-
-variable "name" {
-  type        = string
-  description = "Name tag for the EC2 instance"
+tags = { Name = "My EC2 Instance" }
 }
