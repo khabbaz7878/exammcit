@@ -5,7 +5,7 @@ module "vpc" {
   private_subnet_cidr = "10.0.2.0/24"
 }
 
-module "ec2_instance" {
+module "ec2-instance" {
   source      = "./ec2-instance"
   ami         = "your-ami-id"
   instance_type = "t2.micro"
