@@ -1,18 +1,11 @@
-
-
-
-
-variable "name" {
-  type        = string
-  description = "Name of the VPC"
-}
-
-variable "cidr_block" {
-  type        = string
+variable "vpc_cidr" {
   description = "CIDR block for the VPC"
 }
 
-variable "subnet_cidr_block" {
-  type        = string
+variable "public_subnet_cidr" {
   description = "CIDR block for the public subnet"
+}
+
+variable "private_subnet_cidr" {
+  description = "CIDR block for the private subnet"
 }
