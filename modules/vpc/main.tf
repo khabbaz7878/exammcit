@@ -1,11 +1,20 @@
-module "vpc" { 
-source = "terraform-aws-modules/vpc/aws"
+resource "aws_vpc" "main" {
+  cidr_block = var.vpc_cidr
+  # Add other VPC configurations as needed
+}
 
-name = "my-vpc" cidr = "10.0.0.0/16"
+resource "aws_subnet" "public" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet_cidr
+  # Add other public subnet configurations as needed
+}
 
-aws = ["us-east-1a", "us-east-1b", "us-east-1c"] 
-private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"] 
-public_subnets = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+resource "aws_subnet" "private" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.private_subnet_cidr
+  # Add other private subnet configurations as needed
+}
 
-tags = { Name = "My VPC" }
+output "vpc_id" {
+  value = aws_vpc.main.id
 }
