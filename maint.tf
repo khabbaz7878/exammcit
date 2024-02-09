@@ -1,73 +1,55 @@
-provider "aws" {
-  region = var.aws_region
+# VPC module (vpc/main.tf)
+
+resource "aws_vpc" "myapp_vpc" {
+  cidr_block = "10.0.0.0/16"
 }
 
-locals {
-  instance_ami = "ami-0c55b159cbfafe1f0"
-  instance_http_port = 80
+resource "aws_subnet" "myapp_subnet_1" {
+  vpc_id = aws_vpc.myapp_vpc.id
+  cidr_block = "10.0.1.0/24"
 }
 
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "3.0.0"
-
-  name = "my-vpc"
-  cidr = var.vpc_cidr
-
-  azs             = data.aws_availability_zones.available.names
-  public_subnets  = var.public_subnet_cidrs
-  enable_nat_gateway = true
+output "vpc_id" {
+  value = aws_vpc.myapp_vpc.id
 }
 
-module "ec2_instance" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "3.0.0"
-
-  name = "example-instance"
-
-  ami           = local.instance_ami
-  instance_type = var.instance_type
-  key_name      = "example-key"
-
-  vpc_security_group_ids = [aws_security_group.instance.id]
-  subnet_id = tolist(data.aws_subnet_ids.public.ids)[0]
-
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World!" > index.html
-              nohup busybox httpd -f -p "${local.instance_http_port}" &
-              EOF
+output "subnet_id" {
+  value = aws_subnet.myapp_subnet_1.id
 }
 
-data "aws_vpc" "selected" {
-  filter {
-    name   = "tag:Name"
-    values = ["my-vpc"]
-  }
+# EC2 module (ec2/main.tf) 
+
+variable "vpc_id" {}
+
+variable "subnet_id" {}
+
+resource "aws_instance" "myapp_server" {
+  ami           = "ami-0c55b159cbfafe1f0" 
+  instance_type = "t2.micro"
+  subnet_id     = var.subnet_id
+
+  vpc_security_group_ids = [aws_security_group.myapp_sg.id] 
 }
 
-data "aws_subnet_ids" "public" {
-  vpc_id = data.aws_vpc.selected.id
-
-  tags = {
-    Tier = "public"
-  }
-}
-
-resource "aws_security_group" "instance" {
-  name_prefix = "example-instance"
+resource "aws_security_group" "myapp_sg" {
+  vpc_id = var.vpc_id
 
   ingress {
-    from_port = local.instance_http_port
-    to_port   = local.instance_http_port
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
   }
 }
 
-output "instance_public_ip" {
-  value = module.ec2_instance.public_ip
+# Root module (main.tf)
+
+module "vpc" {
+  source = "./vpc"
+}
+
+module "ec2" {
+  source    = "./ec2"
+  vpc_id    = module.vpc.vpc_id
+  subnet_id = module.vpc.subnet_id
 }
